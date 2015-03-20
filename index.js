@@ -1,53 +1,42 @@
 var readdirp = require('readdirp')
-var through = require('through2')
-var setIn = require('set-in')
-var debug = require('debug')('directory-content')
+var combiner = require('stream-combiner2')
+var debug = require('debug')('fs-db')
 
-module.exports = function directoryContent(opts, cb) {
-  debug('directoryContent(', opts, cb.toString(), ')')
+var codecs = require('./codecs')
 
-  var fs = opts.fs || require('fs')
+module.exports = FsDb
 
-  var obj = {}
+function FsDb (options) {
+  if (!(this instanceof FsDb)) {
+    return new FsDb(options)
+  }
+  debug("constructor(", options, ")")
 
-  readdirp(opts)
-  .on('warn', function (err) {
-    debug('readdirp non-fatal error', err)
-  })
-  .on('error', function (err) {
-    debug('readdirp fatal error', err)
-    cb(err)
-  })
-  .pipe(through.obj(function (entry, _, next) {
+  this.location = options.location || process.cwd()
+  this.fs = options.fs || require('fs')
 
-    debug('readFile(', entry.fullPath, ')')
-    fs.readFile(entry.fullPath, {
-      encoding: opts.fileEncoding || 'utf8',
-    }, function (err, contents) {
-      debug('readFile() ->', err, contents)
-      if (err) { return next(err) }
-
-      var objPath = fsPathToObjPath(entry.path)
-
-      setIn(obj, objPath, contents)
-      debug('set obj', obj)
-
-      next()
-    }.bind(this))
-  }))
-  .on('error', function (err) {
-    debug('through stream fatal error', err)
-    cb(err)
-  })
-  .on('finish', function () {
-    debug('directoryContent() ->', obj)
-    cb(null, obj)
-  })
+  var codec = options.codec || 'json'
+  this.codec = (typeof codec === 'string') ?
+    codecs[codec] : codec
 }
 
-function fsPathToObjPath (fsPath) {
-  debug('fsPathToObjPath(', fsPath, ')')
-  var objPath = fsPath.split('/')
-  debug('fsPathToObjPath() ->', objPath)
-  return objPath
+FsDb.prototype = {
+  createReadStream: createReadStream,
+}
+
+function createReadStream () {
+  debug('createReadStream()')
+
+  return combiner(
+    readdirp({
+      root: this.location,
+      fileFilter: "*." + this.codec.type
+    }),
+    require('./lib/read')({
+      fs: this.fs,
+    }),
+    require('./lib/parse')({
+      codec: this.codec,
+    })
+  )
 }

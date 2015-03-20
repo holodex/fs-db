@@ -1,37 +1,46 @@
 {
-  "name": "directory-content",
-  "version": "1.0.0",
-  "description": "returns a JSON object of directory contents",
+  "name": "fs-db",
+  "version": "2.0.0",
+  "description": "wip to use fs as a db",
   "main": "index.js",
   "scripts": {
     "test": "tape test"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ahdinosaur/directory-content.git"
+    "url": "https://github.com/ahdinosaur/fs-db.git"
   },
   "keywords": [
     "directory",
     "analyze",
     "walk",
     "json",
-    "object",
-    "tree",
-    "content"
+    "yaml",
+    "model",
+    "fs",
+    "database",
+    "human",
+    "readable"
   ],
   "author": "ahdinosaur",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/ahdinosaur/directory-content/issues"
+    "url": "https://github.com/ahdinosaur/fs-db/issues"
   },
-  "homepage": "https://github.com/ahdinosaur/directory-content",
+  "homepage": "https://github.com/ahdinosaur/fs-db",
   "devDependencies": {
+    "stream-to-array": "^2.0.2",
     "tape": "^3.5.0"
   },
   "dependencies": {
     "debug": "^2.1.3",
+    "json-pointer": "^0.3.0",
+    "level-codec": "^4.2.0",
     "readdirp": "^1.3.0",
     "set-in": "^1.0.0",
-    "through2": "^0.6.3"
+    "stream-combiner2": "^1.0.2",
+    "through2": "^0.6.3",
+    "traverse": "^0.6.6",
+    "xtend": "^4.0.0"
   }
 }

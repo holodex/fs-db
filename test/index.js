@@ -1,27 +1,31 @@
 var test = require('tape')
+var extend = require('xtend')
+var streamToArray = require('stream-to-array')
 
-var dirToObj = require('../')
+var FsDb = require('../')
 
-test('correctly represents test data directory', function (t) {
-  dirToObj({
-    root: __dirname + '/data',
-  }, function (err, obj) {
+function ctor (options) {
+  return FsDb(extend({
+    location: __dirname + '/data',
+  }, options || {}))
+}
+
+test('Constructor', function (t) {
+  t.equal(typeof FsDb, 'function')
+  var fsDb = ctor()
+  t.ok(fsDb)
+  t.equal(typeof fsDb, 'object')
+  t.equal(typeof fsDb.createReadStream, 'function')
+  t.end()
+})
+
+test('.createReadStream()', function (t) {
+  var fsDb = ctor()
+  var readStream = fsDb.createReadStream()
+  streamToArray(readStream, function (err, data) {
     t.notOk(err, 'no error')
-    t.deepEqual(obj, {
-      1: {
-        2: {
-        '13.txt': '12\n',
-          3: {
-            '10.txt': '11\n'
-          },
-          '9.txt': '8\n',
-        },
-      },
-      '14.txt': '15\n',
-      5: {
-        '6.txt': '7\n',
-      },
-    }, 'object is correct')
+    t.deepEqual(data, [
+    ], 'data is correct')
     t.end()
   })
 })
