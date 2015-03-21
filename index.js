@@ -28,15 +28,8 @@ function createReadStream () {
   debug('createReadStream()')
 
   return combiner(
-    readdirp({
-      root: this.location,
-      fileFilter: "*." + this.codec.type
-    }),
-    require('./lib/read')({
-      fs: this.fs,
-    }),
-    require('./lib/parse')({
-      codec: this.codec,
-    })
+    require('./lib/read-dir')(this),
+    require('./lib/read-file')(this),
+    require('./lib/parse')(this)
   )
 }
