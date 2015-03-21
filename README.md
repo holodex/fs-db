@@ -34,4 +34,4 @@ possible `options` are:
 
 #### fsDb.createReadStream()
 
-returns a readable stream of objects with `id`s based on the file path.
+returns a readable [pull stream](https://npmjs.org/package/pull-stream) of objects with [JSON Pointer](https://npmjs.org/package/json-pointer) `id`s based on the path.
