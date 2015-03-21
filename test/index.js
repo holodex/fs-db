@@ -2,26 +2,13 @@ var test = require('tape')
 var fs = require('fs')
 var Path = require('path')
 var extend = require('xtend')
-var sortJson = require('sort-json')
+var sortKeys = require('sort-keys')
+var sortBy = require('sort-by')
 var pull = require('pull-stream')
 var pullToArray = require('pull-array-collate')
 var streamToArray = require('stream-to-array')
 
 var FsDb = require('../')
-
-function ctor (options) {
-  return FsDb(extend({
-    location: __dirname + '/data',
-  }, options || {}))
-}
-
-function readJson (file) {
-  return JSON.parse(
-    fs.readFileSync(
-      Path.join(__dirname, file), 'utf8'
-    )
-  )
-}
 
 test('Constructor', function (t) {
   t.equal(typeof FsDb, 'function')
@@ -39,8 +26,8 @@ test('.createReadStream()', function (t) {
     readStream,
     pullToArray(),
     pull.drain(function (data) {
-      var expected = readJson('./data.json')
-      var actual = sortJson(data)
+      var expected = readData('./data.json')
+      var actual = sortData(data)
       t.deepEqual(actual, expected)
     }, function (err) {
       t.notOk(err, 'no error')
@@ -48,3 +35,23 @@ test('.createReadStream()', function (t) {
     })
   )
 })
+
+function ctor (options) {
+  return FsDb(extend({
+    location: __dirname + '/data',
+  }, options || {}))
+}
+
+function readData (file) {
+  return JSON.parse(
+    fs.readFileSync(
+      Path.join(__dirname, file), 'utf8'
+    )
+  )
+}
+
+function sortData (data) {
+  return data.map(function (item) {
+    return sortKeys(item)
+  }).sort(sortBy('id'))
+}
