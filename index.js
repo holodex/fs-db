@@ -1,5 +1,5 @@
-var readdirp = require('readdirp')
-var combiner = require('stream-combiner2')
+var pull = require('pull-stream')
+var pullToStream = require('pull-stream-to-stream')
 var debug = require('debug')('fs-db')
 
 var codecs = require('./codecs')
@@ -26,8 +26,8 @@ FsDb.prototype = {
 
 function createReadStream () {
   debug('createReadStream()')
-
-  return combiner(
+  
+  return pull(
     require('./lib/read-dir')(this),
     require('./lib/read-file')(this),
     require('./lib/parse')(this)

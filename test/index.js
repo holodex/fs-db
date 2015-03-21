@@ -1,5 +1,7 @@
 var test = require('tape')
 var extend = require('xtend')
+var pull = require('pull-stream')
+var pullToArray = require('pull-array-collate')
 var streamToArray = require('stream-to-array')
 
 var FsDb = require('../')
@@ -22,10 +24,13 @@ test('Constructor', function (t) {
 test('.createReadStream()', function (t) {
   var fsDb = ctor()
   var readStream = fsDb.createReadStream()
-  streamToArray(readStream, function (err, data) {
-    t.notOk(err, 'no error')
-    t.deepEqual(data, [
-    ], 'data is correct')
-    t.end()
-  })
+  pull(
+    readStream,
+    pullToArray(),
+    pull.drain(function (data) {
+      t.deepEqual(data, [
+      ], 'data is correct')
+      t.end()
+    })
+  )
 })
