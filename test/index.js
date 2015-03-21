@@ -1,4 +1,6 @@
 var test = require('tape')
+var fs = require('fs')
+var Path = require('path')
 var extend = require('xtend')
 var pull = require('pull-stream')
 var pullToArray = require('pull-array-collate')
@@ -10,6 +12,14 @@ function ctor (options) {
   return FsDb(extend({
     location: __dirname + '/data',
   }, options || {}))
+}
+
+function readJson (file) {
+  return JSON.parse(
+    fs.readFileSync(
+      Path.join(__dirname, file), 'utf8'
+    )
+  )
 }
 
 test('Constructor', function (t) {
@@ -28,8 +38,10 @@ test('.createReadStream()', function (t) {
     readStream,
     pullToArray(),
     pull.drain(function (data) {
-      t.deepEqual(data, [
-      ], 'data is correct')
+      var expected = readJson('./data.json')
+      t.deepEqual(data, expected)
+    }, function (err) {
+      t.notOk(err, 'no error')
       t.end()
     })
   )
