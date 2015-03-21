@@ -30,6 +30,7 @@
   "homepage": "https://github.com/ahdinosaur/fs-db",
   "devDependencies": {
     "pull-array-collate": "^0.1.0",
+    "sort-json": "^1.1.0",
     "tape": "^3.5.0"
   },
   "dependencies": {

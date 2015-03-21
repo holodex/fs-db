@@ -2,6 +2,7 @@ var test = require('tape')
 var fs = require('fs')
 var Path = require('path')
 var extend = require('xtend')
+var sortJson = require('sort-json')
 var pull = require('pull-stream')
 var pullToArray = require('pull-array-collate')
 var streamToArray = require('stream-to-array')
@@ -39,7 +40,8 @@ test('.createReadStream()', function (t) {
     pullToArray(),
     pull.drain(function (data) {
       var expected = readJson('./data.json')
-      t.deepEqual(data, expected)
+      var actual = sortJson(data)
+      t.deepEqual(actual, expected)
     }, function (err) {
       t.notOk(err, 'no error')
       t.end()
