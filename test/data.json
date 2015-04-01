@@ -12,6 +12,10 @@
     "id": "abc/stu#/10/2"
   },
   {
+    "0": "1",
+    "id": "def/ghi/jkl/mno"
+  },
+  {
     "2": "3",
     "4": "def/pqr#/4",
     "id": "def/pqr"
