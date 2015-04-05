@@ -1,6 +1,6 @@
 {
   "name": "fs-db",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "wip to use fs as a db",
   "main": "index.js",
   "scripts": {
