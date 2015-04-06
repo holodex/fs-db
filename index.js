@@ -1,5 +1,4 @@
 var pull = require('pull-stream')
-var pullToStream = require('pull-stream-to-stream')
 var debug = require('debug')('fs-db')
 
 var codecs = require('./codecs')
