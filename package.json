@@ -35,6 +35,7 @@
     "tape": "^3.5.0"
   },
   "dependencies": {
+    "comma-separated-values": "^3.6.2",
     "debug": "^2.1.3",
     "is-plain-object": "^1.0.0",
     "js-yaml": "^3.3.1",
