@@ -1,34 +1,38 @@
-var pull = require('pull-stream')
-var debug = require('debug')('fs-db')
+var debug = require('debug')('fsdown:')
+var AbstractStreamLevelDown = require('abstract-stream-leveldown')
+var inherits = require('inherits')
+var defined = require('defined')
 
-var codecs = require('./codecs')
+module.exports = FsDown
 
-module.exports = FsDb
-
-function FsDb (options) {
-  if (!(this instanceof FsDb)) {
-    return new FsDb(options)
+function FsDown (location, options) {
+  if (!(this instanceof FsDown)) {
+    return new FsDown(location, options)
   }
-  debug("constructor(", options, ")")
 
-  this.location = options.location || process.cwd()
-  this.fs = options.fs || require('fs')
+  debug("constructor(", location, options, ")")
 
-  var codec = options.codec || 'json'
-  this.codec = (typeof codec === 'string') ?
-    codecs[codec] : codec
+  this.location = defined(location, process.cwd())
 }
+inherits(FsDown, AbstractStreamLevelDown)
 
-FsDb.prototype = {
-  createReadStream: createReadStream,
+FsDown.prototype = {
+  _createReadStream: createReadStream,
+  _createWriteStream: createWriteStream,
 }
 
 function createReadStream () {
   debug('createReadStream()')
-  
-  return pull(
-    require('./lib/read-dir')(this),
-    require('./lib/read-file')(this),
-    require('./lib/parse')(this)
-  )
+
+  // get file read stream
+  // read file
+  // parse input
+}
+
+function createWriteStream () {
+  debug('createWriteStream()')
+
+  // get file write stream
+  // format output
+  // write to file
 }

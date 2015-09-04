@@ -1,6 +1,6 @@
-# fs-db
+# fsdown
 
-a silly **work in progress** to use the filesystem as a database.
+a silly **work in progress** to use the filesystem (e.g. `.csv`, `.ldjson` files) as a database.
 
 the purpose is for apps to have human editable and readable data that can be iterated on easily (vim macros over sql migrations) and shared more openly (GitHub repos over JSON APIs).
 
@@ -9,29 +9,27 @@ the purpose is for apps to have human editable and readable data that can be ite
 ### install
 
 ```
-npm install --save fs-db
+npm install --save fsdown
 ```
 
 ### use
 
 ```
-var FsDb = require('fs-db')
+var levelup = require('levelup')
 
-var fsDb = FsDb({
-  location: __dirname + '/data',
-})
+var db = levelup(
+  __dirname + '/things.csv',
+  {
+    db: require('fsdown')()
+  }
+)
 
-fsDb.createReadStream()
-  .pipe(process.stdout)
+db.readStream()
+  .on('data', console.log)
 ```
 
-#### FsDb(options)
+#### fsdown(codec, options)
 
-possible `options` are:
+`codec` is which codec to use (defaults to 'csv'). can be a name of an existing codec or a custom codec object, see [codecs](./codecs) for what is expected of a codec.
 
-- `location`: root filesystem directory of the database
-- `codec`: codec to use (defaults to 'json'), see [codecs](./codecs)
-
-#### fsDb.createReadStream()
-
-returns a readable [pull stream](https://npmjs.org/package/pull-stream) of objects with [JSON Pointer](https://npmjs.org/package/json-pointer) `id`s based on the path.
+`options` are passed to the codec.
