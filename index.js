@@ -1,24 +1,37 @@
 var debug = require('debug')('fsdown:')
-var AbstractStreamLevelDown = require('abstract-stream-leveldown')
-var inherits = require('inherits')
+var stampit = require('stampit')
+var AbstractDown = stampit.convertConstructor(require('abstract-stream-leveldown'))
 var defined = require('defined')
 
-module.exports = FsDown
+var codecs = require('./codecs')
 
-function FsDown (location, options) {
-  if (!(this instanceof FsDown)) {
-    return new FsDown(location, options)
-  }
+module.exports = configureFsDown
 
-  debug("constructor(", location, options, ")")
+var FsDown = stampit({
+  props: {
+    _createReadStream: createReadStream,
+    _createWriteStream: createWriteStream,
+  },
+}).compose(AbstractDown)
 
-  this.location = defined(location, process.cwd())
+function configureFsDown (options) {
+  options = defined(options, {})
+
+  return FsDown.props({
+    codec: getCodec(options),
+    options: options
+  })
 }
-inherits(FsDown, AbstractStreamLevelDown)
 
-FsDown.prototype = {
-  _createReadStream: createReadStream,
-  _createWriteStream: createWriteStream,
+module.exports = configureFsDown
+
+function getCodec (options) {
+  var codec = options.codec
+  if (typeof codec === 'string') {
+    codec = codecs[codec]
+  } else if (!codec || typeof codec !== 'object') {
+    codec = codecs.csv
+  }
 }
 
 function createReadStream () {

@@ -1,4 +1,6 @@
 module.exports = {
   decode: require('csv-parser'),
-  encode: require('json-csv').csv
+  encode: function () {
+    throw new Error('FsDown: csv.encode not implemented!')
+  }
 }
