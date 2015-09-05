@@ -1,24 +1,20 @@
 var test = require('tape')
 var fs = require('fs')
 var Path = require('path')
-var extend = require('xtend')
-var sortKeys = require('sort-keys')
-var sortBy = require('sort-by')
-var pull = require('pull-stream')
-var pullToArray = require('pull-array-collate')
-var streamToArray = require('stream-to-array')
+var Abstract = require('abstract-leveldown')
 
-var FsDb = require('../')
+var FsDown = require('../')
 
-test('Constructor', function (t) {
-  t.equal(typeof FsDb, 'function')
-  var fsDb = ctor()
-  t.ok(fsDb)
-  t.equal(typeof fsDb, 'object')
-  t.equal(typeof fsDb.createReadStream, 'function')
+test('exports', function (t) {
+  t.equal(typeof FsDown, 'function')
+  var Ctor = FsDown()
+  t.equal(typeof Ctor, 'function')
+  var db = Ctor()
+  t.ok(Abstract.isLevelDown(db))
   t.end()
 })
 
+/*
 test('.createReadStream()', function (t) {
   var fsDb = ctor()
   var readStream = fsDb.createReadStream()
@@ -26,7 +22,7 @@ test('.createReadStream()', function (t) {
     readStream,
     pullToArray(),
     pull.drain(function (data) {
-      var expected = readData('./data.json')
+      var expected = readData('./data/.json')
       var actual = sortData(data)
       t.deepEqual(actual, expected)
     }, function (err) {
@@ -55,3 +51,4 @@ function sortData (data) {
     return sortKeys(item)
   }).sort(sortBy('id'))
 }
+*/
