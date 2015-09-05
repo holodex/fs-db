@@ -1,0 +1,26 @@
+[
+  {
+    "key": "0",
+    "value": {
+      "key": "0",
+      "name": "bed",
+      "description": "a comfy couch"
+    }
+  },
+  {
+    "key": "1",
+    "value": {
+      "key": "1",
+      "name": "chair",
+      "description": "a sweet spot"
+    }
+  },
+  {
+    "key": "2",
+    "value": {
+      "key": "2",
+      "name": "desk",
+      "description": "a clean surface"
+    }
+  }
+]
