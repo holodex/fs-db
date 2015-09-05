@@ -5,14 +5,18 @@ var Abstract = require('abstract-leveldown')
 
 var FsDown = require('../')
 
-test('exports', function (t) {
+test('exports proper api', function (t) {
   t.equal(typeof FsDown, 'function')
-  var Ctor = FsDown()
-  t.equal(typeof Ctor, 'function')
-  var db = Ctor()
-  t.ok(Abstract.isLevelDown(db))
+  var Db = FsDown()
+  t.equal(typeof Db, 'function')
+  var db = Db('data/one.csv')
+  t.ok(Abstract.isLevelDOWN(db))
   t.end()
 })
+
+// TODO use abstract-leveldown tests
+// https://github.com/Level/abstract-leveldown/blob/master/test.js
+// https://github.com/calvinmetcalf/SQLdown/blob/master/test/test.js
 
 /*
 test('.createReadStream()', function (t) {

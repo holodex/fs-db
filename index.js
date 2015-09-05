@@ -1,29 +1,43 @@
 var debug = require('debug')('fsdown:')
-var stampit = require('stampit')
-var AbstractDown = stampit.convertConstructor(require('abstract-stream-leveldown'))
+var AbstractDown = require('abstract-stream-leveldown').AbstractStreamLevelDOWN
 var defined = require('defined')
+var inherits = require('inherits')
+var assign = require('object-assign')
 
 var codecs = require('./codecs')
 
-module.exports = configureFsDown
+module.exports = getFsDownCtor
 
-var FsDown = stampit({
-  props: {
-    _createReadStream: createReadStream,
-    _createWriteStream: createWriteStream,
-  },
-}).compose(AbstractDown)
+function FsDown (location) {
+  if (!(this instanceof FsDown))
+    return new FsDown(location)
 
-function configureFsDown (options) {
+  AbstractDown.call(this, location)
+}
+inherits(FsDown, AbstractDown)
+
+assign(FsDown.prototype, {
+  _createReadStream: createReadStream,
+  _createWriteStream: createWriteStream
+})
+
+function getFsDownCtor (options) {
   options = defined(options, {})
 
-  return FsDown.props({
-    codec: getCodec(options),
-    options: options
-  })
-}
+  var codec = getCodec(options)
 
-module.exports = configureFsDown
+  function FsDownCtor (location) {
+    if (!(this instanceof FsDownCtor))
+      return new FsDownCtor(location)
+
+    this.codec = codec
+    this.options = options
+    FsDown.call(this, location)
+  }
+  inherits(FsDownCtor, FsDown)
+
+  return FsDownCtor
+}
 
 function getCodec (options) {
   var codec = options.codec
