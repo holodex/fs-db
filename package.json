@@ -47,8 +47,7 @@
     "lodash.assign": "^3.2.0",
     "lodash.foreach": "^3.0.3",
     "node-uuid": "^1.4.3",
-    "stream-combiner2": "git://github.com/zertosh/stream-combiner2#streams3",
-    "through2": "^2.0.0",
-    "write-only-stream": "^1.1.0"
+    "pumpify": "^1.0.2",
+    "through2": "^2.0.0"
   }
 }

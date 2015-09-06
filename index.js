@@ -7,7 +7,7 @@ var forEach = require('lodash.foreach')
 var AbstractDown = require('abstract-stream-leveldown').AbstractStreamLevelDOWN
 var through = require('through2')
 var uuid = require('node-uuid')
-var combine = require('stream-combiner2')
+var pumpify = require('pumpify')
 var prepend = require('prepend-stream')
 
 var codecs = require('./codecs')
@@ -88,7 +88,7 @@ function createWriteStream (options) {
 
   // write current content
   // plus additional changes
-  return combine.obj([
+  return pumpify.obj([
     through.obj(function (row, enc, cb) {
       row.value = JSON.parse(row.value)
       cb(null, row)
