@@ -1,11 +1,13 @@
 var test = require('tape')
 var fs = require('fs')
 var Path = require('path')
+var toStream = require('stream-array')
 var toArray = require('stream-to-array')
 var sortKeys = require('sort-keys')
 var sortBy = require('sort-by')
 var Abstract = require('abstract-leveldown')
 var levelup = require('levelup')
+var levelws = require('level-ws')
 
 var FsDown = require('../')
 
@@ -33,21 +35,36 @@ test('csv .createReadStream()', function (t) {
   })
 })
 
+test('csv .createWriteStream()', function (t) {
+  var db = ctor('two.csv', 'csv')
+  toStream(readData('one.json'))
+    .pipe(db.createWriteStream({ valueEncoding: 'json' }))
+    .on('finish', function () {
+      t.deepEqual(
+        readFile('two.csv'),
+        readFile('one.csv')
+      )
+      t.end()
+    })
+})
+
 function ctor (location, codec, options) {
-  return levelup(
+  return levelws(levelup(
     Path.join(__dirname, 'data', location),
     {
       db: FsDown(codec, options)
     }
+  ))
+}
+
+function readFile (file) {
+  return fs.readFileSync(
+    Path.join(__dirname, 'data', file), 'utf8'
   )
 }
 
 function readData (file) {
-  return JSON.parse(
-    fs.readFileSync(
-      Path.join(__dirname, 'data', file), 'utf8'
-    )
-  )
+  return JSON.parse(readFile(file))
 }
 
 function sortData (data) {
