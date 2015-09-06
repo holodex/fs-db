@@ -28,8 +28,11 @@ db.readStream()
   .on('data', console.log)
 ```
 
-#### fsdown(codec, options)
+#### fsdown(options, codecOptions)
 
-`codec` is which codec to use (defaults to 'csv'). can be a name of an existing codec or a custom codec object, see [codecs](./codecs) for what is expected of a codec.
+`options`:
 
-`options` are passed to the codec.
+- `codec` is which codec to use (defaults to 'csv'). can be a name of an existing codec or a custom codec object, see [codecs](./codecs) for what is expected of a codec.
+- `keyAttribute` is a string identifier of the attribute used as keys (e.g. 'id').
+
+`codecOptions` are passed to the codec.
