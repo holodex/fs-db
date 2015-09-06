@@ -65,11 +65,13 @@ function createReadStream (options) {
 
   // read from file
   return fs.createReadStream(this.location)
-    // parse input
+    // parse data into objects
     .pipe(this.codec.decode(this.codecOptions))
     .pipe(through.obj(function (row, enc, cb) {
+      // get key
       var key = row[keyAttribute]
 
+      // if no key, default to UUID
       if (key == null) {
         key = uuid()
       }
@@ -86,18 +88,20 @@ function createWriteStream (options) {
 
   var table = {}
 
-  // write current content
-  // plus additional changes
   return pumpify.obj([
+    // parse values as json
     through.obj(function (row, enc, cb) {
       row.value = JSON.parse(row.value)
       cb(null, row)
     }),
+    // add current data to beginning of
+    // the data that is to be written
     prepend.obj(this._createReadStream(options)),
+    // construct in-memory table of data
     through.obj(
       function transform (row, enc, cb) {
         debug("transform row", row)
-        // construct in-memory table
+        // perform operation to table
         if (row.type === 'del') {
           delete table[row.key]
         } else {
@@ -106,7 +110,7 @@ function createWriteStream (options) {
         cb()
       },
       function flush (cb) {
-        // output in-memory table
+        // output contents of table
         debug("flush table", table)
         forEach(table, function (value, key) {
           this.push(value)
@@ -114,7 +118,9 @@ function createWriteStream (options) {
         cb()
       }
     ),
+    // format data to string
     this.codec.encode(this.codecOptions),
+    // write to file
     fs.createWriteStream(this.location)
   ])
 }
