@@ -78,7 +78,7 @@ function createReadStream (options) {
 
       cb(null, {
         key: key,
-        value: row
+        value: JSON.stringify(row)
       })
     }))
 }

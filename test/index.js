@@ -26,7 +26,7 @@ test('exports proper api', function (t) {
 
 test('csv .createReadStream()', function (t) {
   var db = ctor('one.csv', 'csv')
-  var readStream = db.createReadStream()
+  var readStream = db.createReadStream({ valueEncoding: 'json' })
   toArray(readStream, function (err, data) {
     t.error(err, 'no error')
     var expected = readData('one.json')
