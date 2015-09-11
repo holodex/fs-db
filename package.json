@@ -38,7 +38,7 @@
     "tape": "^4.2.0"
   },
   "dependencies": {
-    "abstract-stream-leveldown": "git://github.com/holodex/abstract-stream-leveldown",
+    "abstract-stream-leveldown": "^1.1.1",
     "csv-formatter": "^1.0.0",
     "csv-parser": "^1.7.0",
     "debug": "^2.2.0",
