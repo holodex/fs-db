@@ -1,4 +1,4 @@
-var debug = require('debug')('fsdown')
+var debug = require('debug')('fs-db')
 var fs = require('fs')
 var defined = require('defined')
 var inherits = require('inherits')
