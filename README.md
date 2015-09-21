@@ -9,26 +9,26 @@ the purpose is for apps to have human editable and readable data that can be ite
 ### install
 
 ```
-npm install --save fsdown
+npm install --save fs-db
 ```
 
 ### use
 
 ```
-var levelup = require('levelup')
+var FsDb = require('fs-db')
 
-var db = levelup(
+var db = FsDb(
   __dirname + '/things.csv',
-  {
-    db: require('fsdown')()
-  }
+  'csv'
 )
 
 db.readStream()
   .on('data', console.log)
 ```
 
-#### fsdown(options, codecOptions)
+#### fsdown(location, options, codecOptions)
+
+`location` is the path to the database file.
 
 `options`:
 

@@ -4,7 +4,6 @@ var defined = require('defined')
 var inherits = require('inherits')
 var assign = require('lodash.assign')
 var forEach = require('lodash.foreach')
-var AbstractDown = require('abstract-stream-leveldown').AbstractStreamLevelDOWN
 var through = require('through2')
 var uuid = require('node-uuid')
 var pumpify = require('pumpify')
@@ -12,42 +11,32 @@ var prepend = require('prepend-stream')
 
 var codecs = require('./codecs')
 
-module.exports = getFsDownCtor
+module.exports = FsDb
 
-function FsDown (location) {
-  if (!(this instanceof FsDown))
-    return new FsDown(location)
+function FsDb (location, options, codecOptions) {
+  if (!(this instanceof FsDb))
+    return new FsDb(location, options, codecOptions)
 
-  AbstractDown.call(this, location)
-}
-inherits(FsDown, AbstractDown)
-
-assign(FsDown.prototype, {
-  _createReadStream: createReadStream,
-  _createWriteStream: createWriteStream
-})
-
-function getFsDownCtor (options, codecOptions) {
-  options = defined(options, {})
-  codecOptions = defined(codecOptions, {})
-
-  var codec = getCodec(options.codec)
-  var keyAttribute = defined(options.keyAttribute, 'key')
-
-  function FsDownCtor (location) {
-    if (!(this instanceof FsDownCtor))
-      return new FsDownCtor(location)
-
-    this.codec = codec
-    this.codecOptions = codecOptions
-    this.keyAttribute = keyAttribute
-
-    FsDown.call(this, location)
+  if (typeof location === 'undefined') {
+    throw new Error('fs-db: location is not defined')
   }
-  inherits(FsDownCtor, FsDown)
 
-  return FsDownCtor
+  if (typeof options === 'string') {
+    options = { codec: options }
+  } else {
+    options = defined(options, {})
+  }
+
+  this.location = location
+  this.codec = getCodec(options.codec)
+  this.codecOptions = defined(codecOptions, {})
+  this.keyAttribute = defined(options.keyAttribute, 'key')
 }
+
+assign(FsDb.prototype, {
+  createReadStream: createReadStream,
+  createWriteStream: createWriteStream
+})
 
 function getCodec (codec) {
   if (typeof codec === 'string') {
@@ -76,10 +65,7 @@ function createReadStream (options) {
         key = uuid()
       }
 
-      cb(null, {
-        key: key,
-        value: JSON.stringify(row)
-      })
+      cb(null, { key: key, value: row })
     }))
 }
 
@@ -90,13 +76,11 @@ function createWriteStream (options) {
 
   return pumpify.obj([
     // parse values as json
-    through.obj(function (row, enc, cb) {
-      row.value = JSON.parse(row.value)
-      cb(null, row)
-    }),
     // add current data to beginning of
     // the data that is to be written
-    prepend.obj(this._createReadStream(options)),
+    prepend.obj(
+      this.createReadStream(options)
+    ),
     // construct in-memory table of data
     through.obj(
       function transform (row, enc, cb) {
