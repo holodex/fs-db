@@ -45,11 +45,13 @@ function getCodec (codec) {
   } else {
     codecOptions = {}
   }
+
   if (typeof codec === 'string') {
     codec = codecs[codec]
   } else if (!isCodec(codec)) {
     codec = codecs.csv
   }
+
   return {
     encode: codec.encode.bind(codec, codecOptions),
     decode: codec.decode.bind(codec, codecOptions)
@@ -69,11 +71,12 @@ function createReadStream (options) {
 
   var keyAttribute = this.keyAttribute
 
-  // read from file
-  return fs.createReadStream(this.location)
+  return pumpify.obj([
+    // read from file
+    fs.createReadStream(this.location),
     // parse data into objects
-    .pipe(this.codec.decode(this.codecOptions))
-    .pipe(through.obj(function (row, enc, cb) {
+    this.codec.decode(),
+    through.obj(function (row, enc, cb) {
       // get key
       var key = row[keyAttribute]
 
@@ -83,7 +86,8 @@ function createReadStream (options) {
       }
 
       cb(null, { key: key, value: row })
-    }))
+    })
+  ])
 }
 
 function createWriteStream (options) {
@@ -120,7 +124,7 @@ function createWriteStream (options) {
       }
     ),
     // format data to string
-    this.codec.encode(this.codecOptions),
+    this.codec.encode(),
     // write to file
     fs.createWriteStream(this.location)
   ])
