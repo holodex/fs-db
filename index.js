@@ -40,8 +40,8 @@ assign(FsDb.prototype, {
 function getCodec (codec) {
   var codecOptions
   if (Array.isArray(codec)) {
-    codec = codec[0]
     codecOptions = codec[1]
+    codec = codec[0]
   } else {
     codecOptions = {}
   }
