@@ -13,23 +13,22 @@ var codecs = require('./codecs')
 
 module.exports = FsDb
 
-function FsDb (location, options, codecOptions) {
+function FsDb (options) {
   if (!(this instanceof FsDb))
-    return new FsDb(location, options, codecOptions)
+    return new FsDb(options)
 
-  if (typeof location === 'undefined') {
-    throw new Error('fs-db: location is not defined')
-  }
-
-  if (typeof options === 'string') {
-    options = { codec: options }
+  if (typeof options == 'string') {
+    options = { location: options }
   } else {
     options = defined(options, {})
   }
 
-  this.location = location
+  if (options.location == null) {
+    throw new Error('fs-db: options.location is required.')
+  }
+
+  this.location = options.location
   this.codec = getCodec(options.codec)
-  this.codecOptions = defined(codecOptions, {})
   this.keyAttribute = defined(options.keyAttribute, 'key')
 }
 
@@ -39,12 +38,30 @@ assign(FsDb.prototype, {
 })
 
 function getCodec (codec) {
+  var codecOptions
+  if (Array.isArray(codec)) {
+    codec = codec[0]
+    codecOptions = codec[1]
+  } else {
+    codecOptions = {}
+  }
   if (typeof codec === 'string') {
     codec = codecs[codec]
-  } else if (codec == null || typeof codec !== 'object') {
+  } else if (!isCodec(codec)) {
     codec = codecs.csv
   }
-  return codec
+  return {
+    encode: codec.encode.bind(codec, codecOptions),
+    decode: codec.decode.bind(codec, codecOptions)
+  }
+}
+
+function isCodec (codec) {
+  return (
+    codec != null &&
+    typeof codec.encode === 'function' &&
+    typeof codec.decode === 'function'
+  )
 }
 
 function createReadStream (options) {

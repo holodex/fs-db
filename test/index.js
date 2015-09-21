@@ -18,7 +18,7 @@ test('exports proper api', function (t) {
 })
 
 test('csv .createReadStream()', function (t) {
-  var db = ctor('one.csv', 'csv')
+  var db = ctor({ location: 'one.csv', codec: 'csv' })
   var readStream = db.createReadStream()
   toArray(readStream, function (err, data) {
     t.error(err, 'no error')
@@ -29,7 +29,7 @@ test('csv .createReadStream()', function (t) {
 })
 
 test('csv .createWriteStream()', function (t) {
-  var db = ctor('two.csv', 'csv')
+  var db = ctor({ location: 'two.csv', codec: 'csv' })
   toStream(readData('one.json'))
     .pipe(db.createWriteStream())
     .on('finish', function () {
@@ -41,11 +41,9 @@ test('csv .createWriteStream()', function (t) {
     })
 })
 
-function ctor (location, options, codecOptions) {
-  return FsDb(
-    Path.join(__dirname, 'data', location),
-    options, codecOptions
-  )
+function ctor (options) {
+  options.location = Path.join(__dirname, 'data', options.location)
+  return FsDb(options)
 }
 
 function readFile (file) {

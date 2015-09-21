@@ -17,22 +17,19 @@ npm install --save fs-db
 ```
 var FsDb = require('fs-db')
 
-var db = FsDb(
-  __dirname + '/things.csv',
-  'csv'
-)
+var db = FsDb({
+  location: __dirname + '/things.csv',
+  codec: 'csv'
+})
 
 db.readStream()
   .on('data', console.log)
 ```
 
-#### fsdown(location, options, codecOptions)
-
-`location` is the path to the database file.
+#### fsdown(options)
 
 `options`:
 
-- `codec` is which codec to use (defaults to 'csv'). can be a name of an existing codec or a custom codec object, see [codecs](./codecs) for what is expected of a codec.
+- `location` is the path to the database file.
+- `codec` is which codec to use (defaults to 'csv'). can be a name of an existing codec, a custom codec object (see [codecs](./codecs) for what is expected of a codec), or an array where the first item is one of the previous values and the second item is options to pass to the codec.
 - `keyAttribute` is a string identifier of the attribute used as keys (e.g. 'id').
-
-`codecOptions` are passed to the codec.
